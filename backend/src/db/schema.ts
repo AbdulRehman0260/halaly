@@ -3,8 +3,9 @@ import { pgTable, timestamp, varchar, uuid } from 'drizzle-orm/pg-core';
 //user table
 export const users = pgTable('users', {
     id: uuid('id').primaryKey().defaultRandom(),
-    username: varchar('username', { length: 50 }).notNull().unique(),
-    email: varchar('email', { length: 100 }).notNull().unique(),
+    username: varchar('username', { length: 255 }).notNull().unique(),
+    hashed_password: varchar("hashed_password", { length:255}).notNull().default("unset"),
+    email: varchar('email', { length: 255 }).notNull().unique(),
     created_at: timestamp('created_at').defaultNow(),
     updated_at: timestamp('updated_at').defaultNow().$onUpdate(() => new Date())
 });

@@ -23,6 +23,16 @@ export async function getUserById(userId: string) {
     return user;
 }
 
+//get user by email
+export async function getUserByEmail(email: string) {
+    const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1)
+    return user;
+}
+
 //delete user by id
 export async function deleteUserById(userId: string) {
     await db

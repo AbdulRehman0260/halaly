@@ -1,6 +1,7 @@
-import { createVideo, getVideoById } from "../../db/queries/videos.js";
+import { createVideo, getAllVideos, getVideoById } from "../../db/queries/videos.js";
 import type { Request,Response } from 'express';
 import { deleteVideo } from "../../db/queries/videos.js";
+import type { NewVideo } from "../../db/schema.js";
 
 //create a video
 export const handlerCreateVideo = async (req: Request, res: Response) => {
@@ -54,3 +55,23 @@ export const handlerGetVideoById = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+export const handlerGetAllVideos = async (req:Request, res:Response) => {
+    try {
+        const userId: string = req.params.id
+        if (!userId) {
+            res.status(400).json({error:"User paramater missing"})
+            return
+
+        }
+        const allVideos = await getAllVideos(userId)
+        if (allVideos.length === 0) {
+            res.status(404).json({ error: "No video found" });
+            return
+        }
+        res.status(200).json(allVideos)
+    } catch (error) {
+        console.error("Error getting videos",error)
+        res.status(500).json({error:"Internal Server Error"})
+    }
+}
