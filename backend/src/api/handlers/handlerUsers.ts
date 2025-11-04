@@ -1,7 +1,8 @@
 import type { Request,Response } from "express";
 import { createUser, deleteUserById, getUserByEmail, getUserById } from "../../db/queries/users.js";
 import type { NewUser } from "../../db/schema.js";
-import { checkPasswordHash, hashPassword } from "../../auth.js";
+import { checkPasswordHash, hashPassword, makeJWT } from "../../auth.js";
+import { config } from "../../config.js";
 
 export const handlerCreateUser = async (req: Request, res: Response) => {
     try {
@@ -53,11 +54,12 @@ export const handlerGetUser = async (req:Request, res:Response) => {
 }
 
 //get user by email
-export const handlerGetUserByEmail = async (req:Request, res:Response) => {
+export const handlerLogin = async (req:Request, res:Response) => {
     try {
         type params = {
             password:string,
-            email:string
+            email:string,
+            expiresInSeconds?:number
         }
         const auth:params = req.body
 
@@ -70,21 +72,34 @@ export const handlerGetUserByEmail = async (req:Request, res:Response) => {
             res.status(404).json({ error: "User not found" });
             return;
         }
+
+        const matching = await checkPasswordHash(auth.password, User.hashed_password)
+        if (!matching){
+            throw new Error("Invalid Username or password")
+        }
+
+        let duration = config.jwt.defaultDuration
+
+        if (auth.expiresInSeconds && !(auth.expiresInSeconds > config.jwt.defaultDuration)) {
+            duration = auth.expiresInSeconds
+        }
+
+        const accessToken = makeJWT(User.id,duration,config.jwt.secret)
+
+
+        type UserResponse = Omit<NewUser,'hashed_password'> 
+        type LoginResponse = UserResponse & {token:string}
         
-        type UserResponse = Omit<NewUser,'hashed_password'>
-        
-        const secureResponse: UserResponse =  {
+        const secureResponse =  {
             id: User.id,
             username: User.username,
             email: User.email,
             created_at:User.created_at,
-            updated_at:User.updated_at
-        }
-        if (await checkPasswordHash(auth.password, User.hashed_password)) {
-            res.status(200).json(secureResponse)
-        } else {
-            res.status(401).json({error:"Unauthorized - Incorrect email or password"})
-        }
+            updated_at:User.updated_at,
+            token:accessToken
+        } satisfies LoginResponse
+
+        res.status(200).json(secureResponse);
 
     } catch (error) {
         console.error("Error getting user",error)

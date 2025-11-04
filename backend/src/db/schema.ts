@@ -4,7 +4,7 @@ import { pgTable, timestamp, varchar, uuid } from 'drizzle-orm/pg-core';
 export const users = pgTable('users', {
     id: uuid('id').primaryKey().defaultRandom(),
     username: varchar('username', { length: 255 }).notNull().unique(),
-    hashed_password: varchar("hashed_password", { length:255}).notNull().default("unset"),
+    hashed_password: varchar("hashed_password", { length:255}).notNull(),
     email: varchar('email', { length: 255 }).notNull().unique(),
     created_at: timestamp('created_at').defaultNow(),
     updated_at: timestamp('updated_at').defaultNow().$onUpdate(() => new Date())

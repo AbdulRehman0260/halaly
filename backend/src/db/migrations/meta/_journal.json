@@ -15,6 +15,13 @@
       "when": 1762123865058,
       "tag": "0001_hesitant_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762265202694,
+      "tag": "0002_dazzling_sway",
+      "breakpoints": true
     }
   ]
 }

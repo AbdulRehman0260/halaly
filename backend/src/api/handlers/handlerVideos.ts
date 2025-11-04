@@ -2,6 +2,7 @@ import { createVideo, getAllVideos, getVideoById } from "../../db/queries/videos
 import type { Request,Response } from 'express';
 import { deleteVideo } from "../../db/queries/videos.js";
 import type { NewVideo } from "../../db/schema.js";
+import { config } from "../../config.js";
 
 //create a video
 export const handlerCreateVideo = async (req: Request, res: Response) => {
@@ -12,7 +13,14 @@ export const handlerCreateVideo = async (req: Request, res: Response) => {
             user_id: string;
         }
         const videoParams : parameters = req.body;
-        const newVideo  = await createVideo({title: videoParams.title, description: videoParams.description, user_id: videoParams.user_id});
+        // userId should be attached by the auth middleware
+        const userID = (req as unknown as { userId?: string }).userId;
+        if (!userID) {
+            res.status(401).json({ error: 'Authorization required' });
+            return;
+        }
+
+        const newVideo = await createVideo({ title: videoParams.title, description: videoParams.description, user_id: userID });
         res.status(201).json(newVideo);
     } catch (error) {
         console.error("Error creating video:", error);
