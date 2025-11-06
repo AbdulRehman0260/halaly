@@ -33,7 +33,7 @@ app.delete('/api/videos/:id', middlewareAuth, handlerDeleteVideo);
 app.get('/api/users/:id',handlerGetUser)
 app.post('/api/users',handlerCreateUser);
 app.post('/api/login',handlerLogin);
-app.delete('/api/users/:id',handlerDeleteUser)
+app.delete('/api/users/:id',handlerDeleteUser);
 
 //static files
 app.use("/app",express.static('./src/app'));
