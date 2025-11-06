@@ -24,17 +24,16 @@ app.use(express.json());
 app.get('/healthz',middlewareLogging, handlerReadiness);
 
 //videos
-app.post('/api/videos', middlewareAuth, handlerCreateVideo);
 app.get('/api/videos/:id', handlerGetVideoById);
-app.delete('/api/videos/:id', middlewareAuth, handlerDeleteVideo);
 app.get('/api/allvideos/:id',handlerGetAllVideos);
+app.post('/api/videos', middlewareAuth, handlerCreateVideo);
+app.delete('/api/videos/:id', middlewareAuth, handlerDeleteVideo);
 
 //users
+app.get('/api/users/:id',handlerGetUser)
 app.post('/api/users',handlerCreateUser);
 app.post('/api/login',handlerLogin);
-app.get('/api/users/:id',handlerGetUser)
 app.delete('/api/users/:id',handlerDeleteUser)
-
 
 //static files
 app.use("/app",express.static('./src/app'));

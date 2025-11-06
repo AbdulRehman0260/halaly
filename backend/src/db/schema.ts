@@ -16,7 +16,9 @@ export type NewUser = typeof users.$inferInsert;
 export const videos = pgTable('videos', {
     id: uuid('id').primaryKey().defaultRandom(),
     user_id: uuid('user_id').notNull().references(() => users.id),              
-    title: varchar('title', { length: 100 }).notNull(),
+    title: varchar('title', { length: 100 }),
+    video_url: varchar('video_url', { length: 255 }),
+    thumbnail_url: varchar('thumbnail_url', { length: 255 }),
     description: varchar('description', { length: 255 }).notNull(),
     created_at: timestamp('created_at').defaultNow(),
     updated_at: timestamp('updated_at').defaultNow().$onUpdate(() => new Date())
